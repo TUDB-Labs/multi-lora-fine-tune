@@ -91,18 +91,19 @@ class Task:
         data = preprocess_func[preprocess_type](data)
         logging.info(
             f"Adapter {self.config_.adapter_.name_} "
-            f"data size: {len(data["data_points"])}"
+            f"data size: {len(data["data_points"])} "
         )
 
         for _, data_point in tqdm(enumerate(data["data_points"])):
             self.data_.append(data_point)
 
-    def _pre_context(self, linears_info: OrderedDict[str, LinearInfo]):
+    def _pre_context(self,
+                     linears_info: OrderedDict[str, LinearInfo],
+                     checkpoint: Dict = None):
         adapter_type = self.config_.adapter_.type_
         assert adapter_type in TRAINCONTEXT_CLASS
         self.context_ = TRAINCONTEXT_CLASS[adapter_type](
-            self.config_.adapter_, linears_info
-        )
+            self.config_.adapter_, linears_info, checkpoint)
 
     def _expand_batch_tokens(
         self, batch_tokens: List[Tokens], align_len: Optional[int] = None
